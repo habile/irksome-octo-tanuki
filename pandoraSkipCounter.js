@@ -5,6 +5,7 @@
 // @description  Tracks all stations' individual song-skips per rolling hour.
 // @author       Soren Barr
 // @match        http://www.pandora.com/*
+// @downloadURL  https://raw.githubusercontent.com/habile/irksome-octo-tanuki/master/pandoraSkipCounter.js
 // @grant        none
 // @require      https://gist.github.com/raw/2625891/waitForKeyElements.js
 // ==/UserScript==
