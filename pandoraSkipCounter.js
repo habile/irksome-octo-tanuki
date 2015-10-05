@@ -25,6 +25,14 @@ String.prototype.toTimeShort = function() {
     return ((h > 0) ? hh + ':' + mm + ':' : (m > 0) ? mm + ':' : "") + ss;
 };
 
+String.prototype.lpad = function(padString, length) {
+    var str = this;
+    while (str.length < length) {
+        str = padString + str;
+    }
+    return str;
+};
+
 function skipDisplay() {
     var station = $(".stationChangeSelector [title]:first").attr("title");
 
@@ -102,6 +110,59 @@ function addDisplayFunc(jNode) {
     skipDisplay();
 }
 
+function addJPlayerFunc(jNode) {
+    document.styleSheets[0].insertRule("#timeTip{ \
+        position:abosolute; \
+        z-index:24; \
+        background-color:#ccc; \
+        text-decoration:none; \
+        display: none; \
+        position:absolute; \
+        border: 1px solid #000D23; \
+        background-color: #455774; \
+        color:#FFF; \
+        text-align: center; \
+        width: 40px; \
+        height: 15px; \
+    }", 0);
+
+    var timeouts = {};
+    var player = $('#jPlayer2');
+
+    function progress() {
+        if ($(".progressBar").length > 0) {
+            $(".progressBar").click(function(e) {
+                var l = player.data('jPlayer').status.duration;
+                var x = e.pageX - this.offsetLeft;
+                var w = $(this).width();
+                var p = x / w;
+                var t = Math.round(p * l * 100) / 100;
+                player.jPlayer("play", t);
+            });
+            $(".progressBar").mousemove(function(e) {
+                var l = player.data('jPlayer').status.duration;
+                var x = e.pageX - this.offsetLeft;
+                var w = $(this).width();
+                var p = x / w;
+                var t = p * l * 100 / 100;
+                var mins = Math.floor(t / 60);
+                var secs = Math.floor(t % 60).toString().lpad(0, 2);
+                var time = mins + ':' + secs;
+                $("#timeTip").html(time).css({
+                    "left": (e.clientX - 20) + "px",
+                    "top": (e.clientY - 50) + "px"
+                }).show();
+            }).mouseout(function() {
+                $("#timeTip").hide();
+            });
+            $('.progress').append('<div id="timeTip"></div>');
+        } else {
+            timeouts.progressBar = setTimeout(progress, 200);
+        }
+    }
+    timeouts.progressBar = setTimeout(progress, 200);
+}
+
 function waitJavaQuery() {
     if (typeof window.jQuery == 'undefined') {
         window.setTimeout(waitJavaQuery, 100);
@@ -115,6 +176,7 @@ function addToElements() {
     waitForKeyElements(".thumbDownButton", addSkipFunc);
     waitForKeyElements(".skipButton", addSkipFunc);
     waitForKeyElements(".stationChangeSelector [title]:first", addDisplayFunc);
+    waitForKeyElements("#jPlayer2", addJPlayerFunc);
 }
 
 waitJavaQuery();
