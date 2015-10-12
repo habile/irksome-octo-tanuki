@@ -76,7 +76,7 @@ function skip() {
     var dates = skipDates[station];
 
     if (!(dates instanceof Array)) {
-        dates = [];
+        dates = skipDates[station] = [];
     } else if (dates.length >= 6) {
         return;
     }
